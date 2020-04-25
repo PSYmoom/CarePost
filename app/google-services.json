@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "647854854319",
+    "firebase_url": "https://carepost-29716.firebaseio.com",
+    "project_id": "carepost-29716",
+    "storage_bucket": "carepost-29716.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:647854854319:android:740691789c3b7ce930c45a",
+        "android_client_info": {
+          "package_name": "com.carepost"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "647854854319-gnucahtstvrgrdaaofr4q97dnou05g07.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVUqDfcviXLjwS1YKznMGEfB4bRcj9cQA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "647854854319-gnucahtstvrgrdaaofr4q97dnou05g07.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
