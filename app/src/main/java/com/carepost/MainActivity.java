@@ -1,11 +1,14 @@
 package com.carepost;
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,6 +16,14 @@ import android.widget.TextView;
 import java.util.Random;
 import java.lang.Object;
 import java.lang.Object;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
         Button addMore = findViewById(R.id.addMore);
         Button submitButton = findViewById(R.id.submitButton);
+        final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         addMore.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -45,6 +57,31 @@ public class MainActivity extends AppCompatActivity {
                 String col = String.format("#%06x", randNum);
                 success.setTextColor(Color.parseColor(col));
 
+            }
+        });
+
+        submitButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                CollectionReference tenants = db.collection("tennants");
+                final TextView infoBox = findViewById(R.id.infoBox);
+                String[] coolPart2 = infoBox.getText().toString().split(" ");
+
+                for (int i = 0; i < coolPart2.length; i++) {
+                    Query query = tenants.whereEqualTo("Name", coolPart2[i] + coolPart2[i+1]).whereEqualTo("AptNum", coolPart2[i+2]);
+                    query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    infoBox.setText(infoBox.getText().toString() + document.getData());
+                                }
+                            } else {
+                                //output error
+                            }
+                        }
+                    });
+                }
             }
         });
     }
