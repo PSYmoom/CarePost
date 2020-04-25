@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -22,13 +23,20 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 List<String> subList = new ArrayList<>();
                 List<List<String>> infoList = new ArrayList<>();
+
                 EditText frstName = findViewById(R.id.frstName);
                 EditText lastName = findViewById(R.id.lastName);
                 EditText aptNum = findViewById(R.id.aptNum);
+                TextView success = findViewById(R.id.success);
+
                 subList.add(frstName.getText().toString());
                 subList.add(lastName.getText().toString());
                 subList.add(aptNum.getText().toString());
                 infoList.add(subList);
+                success.setAlpha(0.2f);
+                frstName.setText("");
+                lastName.setText("");
+                aptNum.setText("");
             }
         });
     }
