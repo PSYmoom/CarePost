@@ -12,7 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import java.util.Random;
 import java.lang.Object;
-java.lang.Object
+import java.lang.Object;
 
 public class MainActivity extends AppCompatActivity {
 
