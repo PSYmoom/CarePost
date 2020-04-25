@@ -4,6 +4,7 @@ import java.util.List;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -11,6 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import java.util.Random;
 import java.lang.Object;
+java.lang.Object
 
 public class MainActivity extends AppCompatActivity {
 
@@ -41,7 +43,8 @@ public class MainActivity extends AppCompatActivity {
                 Random obj = new Random();
                 int randNum  = obj.nextInt(0xffffff + 1);
                 String col = String.format("#%06x", randNum);
-                success.setTextColor(setTextColor(getResources().getColor(col)));
+                success.setTextColor(Color.parseColor(col));
+
             }
         });
     }
