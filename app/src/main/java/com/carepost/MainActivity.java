@@ -2,11 +2,15 @@ package com.carepost;
 import java.util.ArrayList;
 import java.util.List;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import java.util.Random;
+import java.lang.Object;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -21,22 +25,23 @@ public class MainActivity extends AppCompatActivity {
         addMore.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                List<String> subList = new ArrayList<>();
-                List<List<String>> infoList = new ArrayList<>();
-
                 EditText frstName = findViewById(R.id.frstName);
                 EditText lastName = findViewById(R.id.lastName);
                 EditText aptNum = findViewById(R.id.aptNum);
                 TextView success = findViewById(R.id.success);
+                TextView infoBox = findViewById(R.id.infoBox);
+                String cool = infoBox.getText().toString() + " " + frstName.getText().toString() + " " + lastName.getText().toString() + " " + aptNum.getText().toString();
+                infoBox.setText(cool);
 
-                subList.add(frstName.getText().toString());
-                subList.add(lastName.getText().toString());
-                subList.add(aptNum.getText().toString());
-                infoList.add(subList);
-                success.setAlpha(0.2f);
+                success.setAlpha(1f);
                 frstName.setText("");
                 lastName.setText("");
                 aptNum.setText("");
+
+                Random obj = new Random();
+                int randNum  = obj.nextInt(0xffffff + 1);
+                String col = String.format("#%06x", randNum);
+                success.setTextColor(setTextColor(getResources().getColor(col)));
             }
         });
     }

@@ -26,7 +26,7 @@
         android:id="@+id/lastName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="212dp"
+        android:layout_marginBottom="24dp"
         android:ems="10"
         android:hint="Last Name"
         android:inputType="textPersonName"
@@ -40,7 +40,7 @@
         android:id="@+id/frstName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="32dp"
         android:ems="10"
         android:hint="First Name"
         android:inputType="textPersonName"
@@ -54,7 +54,7 @@
         android:id="@+id/aptNum"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="48dp"
+        android:layout_marginBottom="100dp"
         android:ems="10"
         android:hint="Apt Number"
         android:inputType="textPersonName"
@@ -81,12 +81,14 @@
         app:layout_constraintBottom_toTopOf="@+id/frstName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.666" />
 
     <Button
         android:id="@+id/submitButton"
         android:layout_width="209dp"
         android:layout_height="49dp"
+        android:layout_marginBottom="100dp"
         android:background="#E0060D"
         android:backgroundTint="#CF0B0B"
         android:text="Submit"
@@ -94,7 +96,6 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
@@ -103,11 +104,21 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"
         android:text="Success!"
-        android:textColor="#FFFFFF"
+        android:textColor="#00FFFFFF"
         android:textSize="24sp"
         app:layout_constraintBottom_toTopOf="@+id/addMore"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/infoBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#00FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
