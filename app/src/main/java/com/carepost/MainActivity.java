@@ -3,7 +3,6 @@ package com.carepost;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Color;
-import android.net.MailTo;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -12,7 +11,6 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Random;
 import android.content.Intent;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
@@ -89,10 +87,79 @@ public class MainActivity extends AppCompatActivity {
 
         Intent i = new Intent(Intent.ACTION_SEND);
         i.setType("message/rfc822");
-        i.putExtra(Intent.EXTRA_EMAIL  , new String[]{"maazthegreat13@gmail.com"});
-        i.putExtra(Intent.EXTRA_SUBJECT, "subject of email");
-        i.putExtra(Intent.EXTRA_TEXT   , "body of email");
-        startActivity(Intent.createChooser(i, "Send mail..."));
+        String email = "";
+        if(tenantArrayList.size()==1){
+            i.putExtra(Intent.EXTRA_EMAIL, new String[]{tenantArrayList.get(0).getMail()});
+            i.putExtra(Intent.EXTRA_SUBJECT, "Pick Up Timings for Today");
+            email = tenantArrayList.get(0).getName() + " (Apt " + tenantArrayList.get(0).getAptNum() + ")\n Pick up at: 9:00 - 17:00 \n\n";
+            i.putExtra(Intent.EXTRA_TEXT, email);
+            startActivity(Intent.createChooser(i, "Send mail..."));
+        }
+        else if(tenantArrayList.size() == 0) {
+             infoBox.setText("FAILED!");
+        }
+        else {
+            for (int j = 0; j < tenantArrayList.size(); j++) {
+                if (j != 0)
+                    email += ",";
+                email += tenantArrayList.get(j).getMail();
+            }
+            i.putExtra(Intent.EXTRA_EMAIL, new String[]{email});
+            email = "";
+            i.putExtra(Intent.EXTRA_SUBJECT, "Pick Up Timings for Today");
+            for (int j = 0; j < tenantArrayList.size(); j++) {
+                float startTime = (9 + j * 8 / tenantArrayList.size());
+                float startMin;
+                float endMin;
+                if(j!=0)
+                    startMin = (startTime % 1)*3/5 + 6;
+                else
+                    startMin = (startTime % 1)*3/5;
+                if(startMin >= 60){
+                    startMin -= 60;
+                    startTime += 1;
+                }
+                if(startMin <= 0){
+                    startMin += 60;
+                    startTime -= 1;
+                }
+                float endTime = startTime + 8 / tenantArrayList.size();
+                if(j!= tenantArrayList.size()-1)
+                    endMin = startMin - 12;
+                else
+                    endMin = startMin - 6;
+                if(endMin <= 0){
+                    endMin += 60;
+                    endTime -= 1;
+                }
+                if(endMin >= 60){
+                    endMin -= 60;
+                    endTime += 1;
+                }
+                String sStartTime = "";
+                String sEndTime = "";
+                if(startTime < 10)
+                    sStartTime += "0" + (int)startTime + ":";
+                else
+                    sStartTime += (int)startTime + ":";
+                if(startMin < 10)
+                    sStartTime += "0" + (int)startMin;
+                else
+                    sStartTime += (int)startMin;
+
+                if(endTime < 10)
+                    sEndTime += "0" + (int)endTime + ":";
+                else
+                    sEndTime += (int)endTime + ":";
+                if(endMin < 10)
+                    sEndTime += "0" + (int)endMin;
+                else
+                    sEndTime += (int)endMin;
+                email += tenantArrayList.get(j).getName() + " (Apt " + tenantArrayList.get(j).getAptNum() + ")\n Pick up at: " + sStartTime + " - " + sEndTime + "\n\n";
+            }
+            i.putExtra(Intent.EXTRA_TEXT, email);
+            startActivity(Intent.createChooser(i, "Send mail..."));
+        }
     }
 
     private void displaySuccess(String text) {
