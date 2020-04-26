@@ -1,51 +1,26 @@
 package com.carepost;
-import java.util.ArrayList;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.net.MailTo;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Random;
 import android.content.Intent;
 import android.widget.Toast;
-import java.util.*;
-//import javax.mail.*;
-//import javax.mail.internet.*;
-//import javax.activation.*;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String TAG = "MainActivity";
-
     private EditText frstName;
     private EditText lastName;
     private EditText aptNum;
@@ -62,8 +37,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        addMore = findViewById(R.id.addMore);
-        submitButton = findViewById(R.id.submitButton);
         frstName = findViewById(R.id.frstName);
         lastName = findViewById(R.id.lastName);
         aptNum = findViewById(R.id.aptNum);
@@ -100,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
                                 displaySuccess("SUCCESS!");
                             }
                         } else {
-                            displaySuccess("FAILURE!");
+                            displaySuccess("FAILED!");
                         }
                         infoBox.setText(data);
                     }
@@ -113,21 +86,25 @@ public class MainActivity extends AppCompatActivity {
 
     public void submitButton(View v) {
         success.setText("");
+
         Intent i = new Intent(Intent.ACTION_SEND);
         i.setType("message/rfc822");
         i.putExtra(Intent.EXTRA_EMAIL  , new String[]{"maazthegreat13@gmail.com"});
         i.putExtra(Intent.EXTRA_SUBJECT, "subject of email");
         i.putExtra(Intent.EXTRA_TEXT   , "body of email");
         startActivity(Intent.createChooser(i, "Send mail..."));
-
-        infoBox.setText(output);
     }
 
     private void displaySuccess(String text) {
-        Random obj = new Random();
-        int randNum  = obj.nextInt(0xffffff + 1);
-        String col = String.format("#%06x", randNum);
-        success.setTextColor(Color.parseColor(col));
+        if (text.equals("FAILED!")){
+            success.setTextColor(Color.parseColor("#c71010"));
+        } else {
+            Random obj = new Random();
+            int randNum = obj.nextInt(0xffffff + 1);
+            String col = String.format("#%06x", randNum);
+            success.setTextColor(Color.parseColor(col));
+        }
+
         success.setText(text);
     }
 }
