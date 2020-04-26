@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.net.MailTo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -14,18 +15,30 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import java.util.Random;
-import java.lang.Object;
-import java.lang.Object;
+import android.content.Intent;
+import android.widget.Toast;
+import java.util.*;
+//import javax.mail.*;
+//import javax.mail.internet.*;
+//import javax.activation.*;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "MainActivity";
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private DocumentReference noteRef = db.document("tenants/Symoom Saad");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,8 +47,6 @@ public class MainActivity extends AppCompatActivity {
 
         Button addMore = findViewById(R.id.addMore);
         Button submitButton = findViewById(R.id.submitButton);
-        final FirebaseFirestore db = FirebaseFirestore.getInstance();
-
         addMore.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
@@ -55,44 +66,77 @@ public class MainActivity extends AppCompatActivity {
                 Random obj = new Random();
                 int randNum  = obj.nextInt(0xffffff + 1);
                 String col = String.format("#%06x", randNum);
-                success.setTextColor(Color.parseColor(col));
 
                 Intent i = new Intent(Intent.ACTION_SEND);
                 i.setType("message/rfc822");
                 i.putExtra(Intent.EXTRA_EMAIL  , new String[]{"maazthegreat13@gmail.com"});
                 i.putExtra(Intent.EXTRA_SUBJECT, "subject of email");
                 i.putExtra(Intent.EXTRA_TEXT   , "body of email");
-                try {
-                    startActivity(Intent.createChooser(i, "Send mail..."));
-                } catch (android.content.ActivityNotFoundException ex) {
-                    Toast.makeText(MyActivity.this, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
-                }
+                startActivity(Intent.createChooser(i, "Send mail..."));
+
+              /*  Intent p = new Intent(Intent.ACTION_SEND);
+                p.setType("message/rfc822");
+                p.putExtra(Intent.EXTRA_EMAIL  , new String[]{"saadsymoom@gmail.com"});
+                p.putExtra(Intent.EXTRA_SUBJECT, "subject of email");
+                p.putExtra(Intent.EXTRA_TEXT   , "body of email");
+                startActivity(Intent.createChooser(p, "Send mail..."));*/
             }
         });
 
         submitButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                CollectionReference tenants = db.collection("tennants");
                 final TextView infoBox = findViewById(R.id.infoBox);
-                String[] coolPart2 = infoBox.getText().toString().split(" ");
+                DocumentReference tenants = db.document("tenants/Symoom Saad");
 
-                for (int i = 0; i < coolPart2.length; i++) {
-                    Query query = tenants.whereEqualTo("Name", coolPart2[i] + coolPart2[i+1]).whereEqualTo("AptNum", coolPart2[i+2]);
-                    query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()) {
-                                for (QueryDocumentSnapshot document : task.getResult()) {
-                                    infoBox.setText(infoBox.getText().toString() + document.getData());
+                tenants.get()
+                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                if (documentSnapshot.exists()) {
+                                    String title = documentSnapshot.getString("Mail");
+                                    String description = documentSnapshot.getString("Name");
+
+                                    //Map<String, Object> note = documentSnapshot.getData();
+
+                                    infoBox.setText("Title: " + title + "\n" + "Description: " + description);
+                                } else {
+                                    Toast.makeText(MainActivity.this, "Document does not exist", Toast.LENGTH_SHORT).show();
                                 }
-                            } else {
-                                //output error
                             }
-                        }
-                    });
-                }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(MainActivity.this, "Error!", Toast.LENGTH_SHORT).show();
+                                Log.d(TAG, e.toString());
+                            }
+                        });
             }
         });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        db.collection("tenants").whereEqualTo("Name", "Symoom Saad").whereEqualTo("AptNum", 1202)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        String data = "";
+                        TextView infoBox = findViewById(R.id.infoBox);
+                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                            String documentId = documentSnapshot.getString("Name");
+                            String title = documentSnapshot.getString("Mail");
+
+                            data += "ID: " + documentId
+                                    + "\nTitle: " + title + "\n\n";
+                        }
+
+                        infoBox.setText(data);
+                    }
+                });
     }
 }
