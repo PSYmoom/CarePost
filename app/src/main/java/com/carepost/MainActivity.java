@@ -1,9 +1,11 @@
 package com.carepost;
+import java.util.ArrayList;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.net.MailTo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -14,6 +16,12 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Random;
+import android.content.Intent;
+import android.widget.Toast;
+import java.util.*;
+//import javax.mail.*;
+//import javax.mail.internet.*;
+//import javax.activation.*;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -26,7 +34,11 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -34,8 +46,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
-    private Button addMore;
-    private Button submitButton;
     private EditText frstName;
     private EditText lastName;
     private EditText aptNum;
@@ -103,16 +113,12 @@ public class MainActivity extends AppCompatActivity {
 
     public void submitButton(View v) {
         success.setText("");
-        String output = "";
-
-        for (Tenant tenant : tenantArrayList) {
-            String documentId = tenant.getName();
-            String title = tenant.getMail();
-            int description = tenant.getAptNum();
-
-            output += "ID: " + documentId
-                    + "\nTitle: " + title + "\nDescription: " + description + "\n\n";
-        }
+        Intent i = new Intent(Intent.ACTION_SEND);
+        i.setType("message/rfc822");
+        i.putExtra(Intent.EXTRA_EMAIL  , new String[]{"maazthegreat13@gmail.com"});
+        i.putExtra(Intent.EXTRA_SUBJECT, "subject of email");
+        i.putExtra(Intent.EXTRA_TEXT   , "body of email");
+        startActivity(Intent.createChooser(i, "Send mail..."));
 
         infoBox.setText(output);
     }
