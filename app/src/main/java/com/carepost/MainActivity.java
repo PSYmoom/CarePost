@@ -1,11 +1,8 @@
 package com.carepost;
-import java.util.ArrayList;
-import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,76 +10,118 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
 import java.util.Random;
-import java.lang.Object;
-import java.lang.Object;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "MainActivity";
+
+    private Button addMore;
+    private Button submitButton;
+    private EditText frstName;
+    private EditText lastName;
+    private EditText aptNum;
+    private TextView success;
+    private TextView infoBox;
+
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private CollectionReference tenantsRef = db.collection("tenants");
+
+    private ArrayList<Tenant> tenantArrayList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button addMore = findViewById(R.id.addMore);
-        Button submitButton = findViewById(R.id.submitButton);
-        final FirebaseFirestore db = FirebaseFirestore.getInstance();
+        addMore = findViewById(R.id.addMore);
+        submitButton = findViewById(R.id.submitButton);
+        frstName = findViewById(R.id.frstName);
+        lastName = findViewById(R.id.lastName);
+        aptNum = findViewById(R.id.aptNum);
+        success = findViewById(R.id.success);
+        infoBox = findViewById(R.id.infoBox);
 
-        addMore.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                EditText frstName = findViewById(R.id.frstName);
-                EditText lastName = findViewById(R.id.lastName);
-                EditText aptNum = findViewById(R.id.aptNum);
-                TextView success = findViewById(R.id.success);
-                TextView infoBox = findViewById(R.id.infoBox);
-                String cool = infoBox.getText().toString() + " " + frstName.getText().toString() + " " + lastName.getText().toString() + " " + aptNum.getText().toString();
-                infoBox.setText(cool);
+        tenantArrayList = new ArrayList<Tenant>();
+    }
 
-                success.setAlpha(1f);
-                frstName.setText("");
-                lastName.setText("");
-                aptNum.setText("");
+    public void addMoreButton(View v) {
+        success.setText("");
 
-                Random obj = new Random();
-                int randNum  = obj.nextInt(0xffffff + 1);
-                String col = String.format("#%06x", randNum);
-                success.setTextColor(Color.parseColor(col));
+        String fullName = frstName.getText().toString() + " " + lastName.getText().toString();
+        int num;
 
-            }
-        });
+        try {
+            num = Integer.parseInt(aptNum.getText().toString());
+        } catch (NumberFormatException e) {
+            num = -1;
+        }
 
-        submitButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                CollectionReference tenants = db.collection("tennants");
-                final TextView infoBox = findViewById(R.id.infoBox);
-                String[] coolPart2 = infoBox.getText().toString().split(" ");
-
-                for (int i = 0; i < coolPart2.length; i++) {
-                    Query query = tenants.whereEqualTo("Name", coolPart2[i] + coolPart2[i+1]).whereEqualTo("AptNum", coolPart2[i+2]);
-                    query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()) {
-                                for (QueryDocumentSnapshot document : task.getResult()) {
-                                    infoBox.setText(infoBox.getText().toString() + document.getData());
-                                }
-                            } else {
-                                //output error
+        tenantsRef.whereEqualTo("Name", fullName)
+                .whereEqualTo("AptNum", num)
+                .limit(1)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        String data = "";
+                        if (!queryDocumentSnapshots.isEmpty()) {
+                            for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                                Tenant tenant = documentSnapshot.toObject(Tenant.class);
+                                tenantArrayList.add(tenant);
+                                displaySuccess("SUCCESS!");
                             }
+                        } else {
+                            displaySuccess("FAILURE!");
                         }
-                    });
-                }
-            }
-        });
+                        infoBox.setText(data);
+                    }
+                });
+
+        frstName.setText("");
+        lastName.setText("");
+        aptNum.setText("");
+    }
+
+    public void submitButton(View v) {
+        success.setText("");
+        String output = "";
+
+        for (Tenant tenant : tenantArrayList) {
+            String documentId = tenant.getName();
+            String title = tenant.getMail();
+            int description = tenant.getAptNum();
+
+            output += "ID: " + documentId
+                    + "\nTitle: " + title + "\nDescription: " + description + "\n\n";
+        }
+
+        infoBox.setText(output);
+    }
+
+    private void displaySuccess(String text) {
+        Random obj = new Random();
+        int randNum  = obj.nextInt(0xffffff + 1);
+        String col = String.format("#%06x", randNum);
+        success.setTextColor(Color.parseColor(col));
+        success.setText(text);
     }
 }
